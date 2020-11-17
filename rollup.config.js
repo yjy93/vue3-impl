@@ -8,9 +8,10 @@ import path from 'path'
 export default {
   input: 'src/index.ts',
   output: {
-    format: 'iife', // 立即执行 自执行函数
+    format: 'umd',
     file: path.resolve('dist/bundle.js'), // 出口文件
     sourcemap: true, //根据源码产生映射文件
+    fileName: 'VueReactivity'
   },
   plugins: [
     nodeResolve({
