@@ -11,16 +11,27 @@
 <script type="text/javascript">
   let {reactive, effect} = VueReactivity
   // 响应式的概念: 双向数据绑定原理 v-model?
-  let state = reactive({name: 'Gene', age: 18}) // 通过代理后的对象来进行操作
-  effect(() => {
+  let obj = {name: 'Gene', age: 18, address: {value: '昌平'}, arr: [1, 2, 3]}
+  let state = reactive(obj) // 通过代理后的对象来进行操作
+  // state.arr[0] = 5
+
+  // effect(() => {
+  //   state.name
+  //   effect(() => {
+  //     state.age
+  //   })
+  //   state.address
+  // })
+
+  effect(function fn1() {
     // id 可以直接使用的
     app.innerHTML = `${state.name} 今年 ${state.age} 岁了!`
   }, {lazy: true})
   // 对数据进行劫持操作 vue2 Object.defineProperty  Vue3里用的是 proxy
   // vue2 中,当页面渲染时会做依赖收集.  vue2 属性收集的是 watcher, vue3 属性收集的是effect
-  setTimeout(() => {
-    state.name = '杨阳'
-  }, 1000)
+  // setTimeout(() => {
+  //   state.name = '杨阳'
+  // }, 1000)
 
 </script>
 </body>

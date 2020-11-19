@@ -13,7 +13,6 @@ import {mutableHandlers} from "./baseHanders"
 // 在 vue3.0 中,没有循环,它是对原对象进行代理, vue3.0中不存在的属性也可以监控到
 // vue3中没有做递归处理
 
-
 export const reactive = (target: object) => {
     return createReactiveObject(target, mutableHandlers); // 高阶函数, 可以根据不同的参数,实现不同的功能
 }
@@ -26,6 +25,7 @@ function createReactiveObject(target, baseHandler) {
     if (!isObject(target)) {
         return target
     }
+    // 如果对象已经被代理过了,就不需要再次代理了
     let existProxy = reactiveMap.get(target)
     if (reactiveMap.get(target)) {
         return existProxy

@@ -17,15 +17,48 @@ export const effect = (fn, options = {}) => {
 }
 
 // effect 应该和数据关联起来
-export const effectStack = []
+export const effectStack = [] // 这个栈为了保证当前的effect 和 属性能对应上
+export let activeEffect = null;
 
-/**
- * @param fn 创建响应式的 effect fn为用户传入的函数
- */
+//创建响应式的 effect fn为用户传入的函数
+let id = 0
+
 function createReactiveEffect(fn) {
     const effect = function reactiveEffect() {
-        effectStack.push(effect)
-        fn() // 执行用户传入的函数
+        if (!effectStack.includes(effect)) {
+            try {
+                effectStack.push(effect)
+                activeEffect = effect  // 记录当前 正在执行的 effect函数
+                return fn() // 执行用户传入的函数
+            } finally {
+                effectStack.pop()
+                activeEffect = effectStack[effectStack.length - 1]
+            }
+        }
     }
+    effect.id = id++
     return effect
+}
+
+// 收集属性 某个对象中的某个属性, 依赖了哪些 effect
+// {} 对象里的某个属性, 对应的 effect 可能有多个 // weakMap
+const targetMap = new WeakMap;
+
+// 建立属性 he effect 之间的关联
+export function track(target, key) {
+    if (activeEffect == undefined) {// 如果 effect 不存在, 那么直接返回
+        return;
+    }
+    let depsMap = targetMap.get(target)
+    if (!depsMap) {
+        targetMap.set(target, (depsMap = new Map()))
+    }
+    let dep = depsMap.get(key)
+    if (!dep) {
+        depsMap.set(key, (dep = new Set()))
+    }
+
+    if (!dep.has(activeEffect)) {
+        dep.add(activeEffect)
+    }
 }
