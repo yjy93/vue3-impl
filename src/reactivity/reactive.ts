@@ -6,18 +6,13 @@
  * @description: reactive 实现
  */
 import {isObject} from "../shared"
+import {mutableHandlers} from "./baseHanders"
 
 // 在 vue2.0 的时候, defineProperty 直接循环对象中的每一个属性, 无法对不存在的属性做处理
 // vue2中递归处理多级对象
 // 在 vue3.0 中,没有循环,它是对原对象进行代理, vue3.0中不存在的属性也可以监控到
 // vue3中没有做递归处理
 
-const mutableHandlers = {
-    get() {
-    },
-    set() {
-    }
-}
 
 export const reactive = (target: object) => {
     return createReactiveObject(target, mutableHandlers); // 高阶函数, 可以根据不同的参数,实现不同的功能
